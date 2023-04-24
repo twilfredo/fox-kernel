@@ -1,0 +1,19 @@
+[package]
+name = "project_fox"
+version = "0.1.0"
+edition = "2021"
+authors = ["Wilfred Mallawa <wilfred.mallawa@wdc.com>"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bootloader = "0.9.23"
+
+# Set the Panic strat to abort as we do not yet support stack unwinding.
+# The following disables teh generation of unwinding symbol information, which also
+# reduces the binary size. With this the `eh_personality` language item is no longer required.
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
