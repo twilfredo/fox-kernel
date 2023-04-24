@@ -1,4 +1,7 @@
 # FOX
+<div style="text-align:center;">
+    <img src="images/fox.jpg" alt="alt text" width="250"/>
+</div>
 
 ## Overview
 
