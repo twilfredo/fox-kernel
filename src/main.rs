@@ -1,6 +1,6 @@
 #![no_std]
 #![no_main]
-mod panic;
+mod kernel;
 
 static HELLO: &[u8] = b"Hello World!";
 
