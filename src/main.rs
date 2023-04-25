@@ -12,9 +12,9 @@ static HELLO: &[u8] = b"Hello World!";
 /// Rust has a minimal runtime, that sets up stack overflow guards and printing a bt on panic.
 /// This runtime then calls `main`.
 ///
-/// Since we are a freestanding executable, we do not have access to teh Rust runtime nor `crt0`.
+/// Since we are a freestanding executable, we do not have access to the Rust runtime nor `crt0`.
 /// So the below defines our own entry point by overwriting the `crt0` entry point directly.
-/// Note that implementing the `start` language item isn't useful, since it still need `crt0`.
+/// Note that implementing the `start` language item isn't useful, since it still needs `crt0`.
 ///
 /// With `#[no_mangle]` we disable name mangling so that the Rust compiler outputs a function named `_start`
 /// not some cryptic symbol in an effort to give every function a unique name. We need the actual name so we can
@@ -23,9 +23,9 @@ static HELLO: &[u8] = b"Hello World!";
 /// The reason this function is named `_start`, typically the default entry point name
 /// for most systems.
 ///
-/// This function also does not return `!` as it is not called by any function, by directly
-/// by the `bootloader` or `OS`, so instead of returning he entry point should e.g. invoke the
-/// exit system call of the operating system.
+/// This function also does not return `!` as it is not called by any function, but directly
+/// by the `bootloader` or `OS`, so instead of returning, the entry point should e.g. invoke the
+/// exit system call of the operating system. For our case, shutting down/looping is sufficient.
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     let vga_buf = 0xb8000 as *mut u8;
