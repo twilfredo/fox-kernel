@@ -1,8 +1,8 @@
 #![no_std]
 #![no_main]
+mod drivers;
 mod kernel;
-
-static HELLO: &[u8] = b"Hello World!";
+use crate::drivers::display::vga;
 
 /// For typical rust binary that links to stdlib, execution start in
 /// the C runtime lib`crt0` ("C runtime zero"). `crt0` initializes the environment
@@ -28,14 +28,8 @@ static HELLO: &[u8] = b"Hello World!";
 /// exit system call of the operating system. For our case, shutting down/looping is sufficient.
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    let vga_buf = 0xb8000 as *mut u8;
+    println!("Booting Fox Kernel v0.0.1");
 
-    for (i, &byte) in HELLO.iter().enumerate() {
-        unsafe {
-            *vga_buf.offset(i as isize * 2) = byte;
-            *vga_buf.offset(i as isize * 2 + 1) = 0xb;
-        }
-    }
-
+    #[allow(clippy::empty_loop)]
     loop {}
 }

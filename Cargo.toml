@@ -8,6 +8,12 @@ authors = ["Wilfred Mallawa <wilfred.mallawa@wdc.com>"]
 
 [dependencies]
 bootloader = "0.9.23"
+volatile = "0.2.6"
+spin = "0.5.2"
+
+[dependencies.lazy_static]
+version = "1.0"
+features = ["spin_no_std"]
 
 # Set the Panic strat to abort as we do not yet support stack unwinding.
 # The following disables teh generation of unwinding symbol information, which also
