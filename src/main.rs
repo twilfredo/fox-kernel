@@ -3,6 +3,7 @@
 mod drivers;
 mod kernel;
 use crate::drivers::display::vga;
+use crate::kernel::delay::nops;
 
 /// For typical rust binary that links to stdlib, execution start in
 /// the C runtime lib`crt0` ("C runtime zero"). `crt0` initializes the environment
@@ -28,8 +29,11 @@ use crate::drivers::display::vga;
 /// exit system call of the operating system. For our case, shutting down/looping is sufficient.
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Booting Fox Kernel v0.0.1");
-
-    #[allow(clippy::empty_loop)]
-    loop {}
+    println!("----- Booting Fox Kernel v0.0.1 -----");
+    let mut loop_count: usize = 0;
+    loop {
+        nops(1000000);
+        println!("Kernel Loop Count: {}", loop_count);
+        loop_count = loop_count.wrapping_add(1);
+    }
 }
