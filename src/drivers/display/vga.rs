@@ -164,3 +164,32 @@ impl fmt::Write for Writer {
         Ok(())
     }
 }
+
+#[test_case]
+fn test_println_simple() {
+    println!("vga: test println!() output");
+}
+
+#[test_case]
+fn test_println_mul() {
+    for _ in 0..500 {
+        println!("vga: test println!() output");
+    }
+}
+
+#[test_case]
+fn test_verify_vga_output() {
+    let line = "123456789 0xBADCAFE 0xDEADBEEF";
+    println!("{line}");
+    for (i, c) in line.chars().enumerate() {
+        // BUFFER_Y - 2 == {line + newline}
+        let vga_char = WRITER.lock().buffer.chars[BUFFER_Y - 2][i].read();
+        assert_eq!(char::from(vga_char.ascii_character), c);
+    }
+    print!("{line}");
+    for (i, c) in line.chars().enumerate() {
+        // BUFFER_Y - 1 == {line}; no newline with `print()`
+        let vga_char = WRITER.lock().buffer.chars[BUFFER_Y - 1][i].read();
+        assert_eq!(char::from(vga_char.ascii_character), c);
+    }
+}

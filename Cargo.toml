@@ -10,16 +10,23 @@ authors = ["Wilfred Mallawa <wilfred.mallawa@wdc.com>"]
 bootloader = "0.9.23"
 volatile = "0.2.6"
 spin = "0.5.2"
+x86_64 = "0.14.2"
+uart_16550 = "0.2.0"
 
 [dependencies.lazy_static]
 version = "1.0"
 features = ["spin_no_std"]
 
+# QEMU supports a special isa-debug-exit device
+# Which provides an easy way to exit QEMU from the guest system
+# Enable it with this
+[package.metadata.bootimage]
+test-args = ["-device", "isa-debug-exit,iobase=0xf4,iosize=0x04", "-serial", "stdio", "-display", "none"]
+# Map qemu exit success enum to cargo test success (by default any non-zero == fail)
+test-success-exit-code = 33         # (0x10 << 1) | 1
+# Exit qemu after timeout
+test-timeout = 30          # (in seconds)
+
 # Set the Panic strat to abort as we do not yet support stack unwinding.
 # The following disables teh generation of unwinding symbol information, which also
 # reduces the binary size. With this the `eh_personality` language item is no longer required.
-[profile.dev]
-panic = "abort"
-
-[profile.release]
-panic = "abort"
