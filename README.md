@@ -38,3 +38,11 @@ You can boot the kernel in QEMU with
 ```shell
 cargo run
 ```
+
+## Testing
+
+The built in integrations/unit-tests can be invoked by running:
+```shell
+cargo test
+```
+This will run all of the tests in `qemu`. Test outputs should be logged to the console, additionally success and failure can be determined by the exit status of QEMU.

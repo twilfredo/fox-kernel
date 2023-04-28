@@ -1,9 +1,18 @@
 #![no_std]
 #![no_main]
+// Custom test framework
+#![feature(custom_test_frameworks)]
+#![test_runner(crate::test_runner)]
+#![reexport_test_harness_main = "test_main"]
+
 mod drivers;
 mod kernel;
 use crate::drivers::display::vga;
+#[allow(unused_imports)]
+use crate::drivers::qemu_serial::serial::*;
 use crate::kernel::delay::nops;
+#[allow(unused_imports)]
+use project_fox::test_runner;
 
 /// For typical rust binary that links to stdlib, execution start in
 /// the C runtime lib`crt0` ("C runtime zero"). `crt0` initializes the environment
@@ -30,10 +39,19 @@ use crate::kernel::delay::nops;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     println!("----- Booting Fox Kernel v0.0.1 -----");
+
+    #[cfg(test)]
+    test_main();
+
     let mut loop_count: usize = 0;
     loop {
         nops(1000000);
         println!("Kernel Loop Count: {}", loop_count);
         loop_count = loop_count.wrapping_add(1);
     }
+}
+
+#[test_case]
+fn trivial_assertion() {
+    assert_eq!(true, true);
 }
