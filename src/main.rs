@@ -43,6 +43,11 @@ use project_fox::test_runner;
 pub extern "C" fn _start() -> ! {
     println!("----- Booting Fox Kernel v0.0.1 -----");
 
+    // Init kernel sub-routines
+    if let Err(()) = project_fox::init() {
+        panic!("Kernel Init Failed");
+    }
+
     #[cfg(test)]
     test_main();
 
