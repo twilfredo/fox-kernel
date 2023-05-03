@@ -35,5 +35,13 @@ pub fn idt_init() {
 /// Note: In rust x86-interrupt calling convention is still unstable
 /// To use it anyways, we explicitly enable it with `#![feature(abi_x86_interrupt)]`
 extern "x86-interrupt" fn bp_handler(sf: InterruptStackFrame) {
-    println!("CPU EXCEPTION: Breakpoint\n {:#?}", sf);
+    println!("!~ CPU EXCEPTION: BREAKPOINT ~!\n {:#?}", sf);
+}
+
+#[test_case]
+fn test_breakpoint_exception() {
+    // invoke a breakpoint exception
+    // As the test runs, we verify this exception was handled
+    // when execution resumes normally.
+    x86_64::instructions::interrupts::int3();
 }

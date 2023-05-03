@@ -49,6 +49,10 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    // Init kernel sub-routines
+    if let Err(()) = init() {
+        panic!("Kernel Init Failed");
+    }
     test_main();
     loop {}
 }
