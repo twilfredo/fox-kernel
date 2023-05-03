@@ -1,5 +1,7 @@
 #![no_std]
 #![no_main]
+// Allow use of unstable `x86-interrupt` calling convention
+#![feature(abi_x86_interrupt)]
 // Custom test framework
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
@@ -11,6 +13,7 @@ use crate::drivers::display::vga;
 #[allow(unused_imports)]
 use crate::drivers::qemu_serial::serial::*;
 use crate::kernel::delay::nops;
+use core::panic::PanicInfo;
 #[allow(unused_imports)]
 use project_fox::test_runner;
 
@@ -40,6 +43,11 @@ use project_fox::test_runner;
 pub extern "C" fn _start() -> ! {
     println!("----- Booting Fox Kernel v0.0.1 -----");
 
+    // Init kernel sub-routines
+    if let Err(()) = project_fox::init() {
+        panic!("Kernel Init Failed");
+    }
+
     #[cfg(test)]
     test_main();
 
@@ -49,6 +57,20 @@ pub extern "C" fn _start() -> ! {
         println!("Kernel Loop Count: {}", loop_count);
         loop_count = loop_count.wrapping_add(1);
     }
+}
+
+/// This function is called on panic.
+#[cfg(not(test))]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    println!("{}", info);
+    loop {}
+}
+
+#[cfg(test)]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    project_fox::test_panic_handler(info)
 }
 
 #[test_case]
