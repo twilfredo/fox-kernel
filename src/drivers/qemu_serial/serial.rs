@@ -2,14 +2,6 @@ use lazy_static::lazy_static;
 use spin::Mutex;
 use uart_16550::SerialPort;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-#[repr(u32)]
-#[allow(dead_code)]
-pub enum QemuExitCode {
-    Success = 0x10,
-    Failed = 0x11,
-}
-
 lazy_static! {
     pub static ref SERIAL1: Mutex<SerialPort> = {
         // 0x3F8 ==  Standard port number for the first serial interface
@@ -42,16 +34,4 @@ pub fn _print(args: ::core::fmt::Arguments) {
         .lock()
         .write_fmt(args)
         .expect("Failed to print to serial");
-}
-
-#[allow(dead_code)]
-pub fn exit_qemu(exit_code: QemuExitCode) {
-    use x86_64::instructions::port::Port;
-
-    unsafe {
-        // 0xf4 = iobase of the `isa-debug-exit` dev.
-        let mut port = Port::new(0xf4);
-        // qemu exits with (exit_code << 1) | 1
-        port.write(exit_code as u32);
-    }
 }

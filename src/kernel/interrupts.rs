@@ -1,3 +1,4 @@
+use crate::kernel::gdt;
 use crate::println;
 use lazy_static::lazy_static;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
@@ -12,6 +13,10 @@ lazy_static! {
         let mut idt = InterruptDescriptorTable::new();
         // Specify breakpoint handler
         idt.breakpoint.set_handler_fn(bp_handler);
+        unsafe {
+            // We MUST ensure that this index is valid and not used elsewhere.
+            idt.double_fault.set_handler_fn(df_handler).set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
+        }
         idt
     };
 }
@@ -35,7 +40,18 @@ pub fn idt_init() {
 /// Note: In rust x86-interrupt calling convention is still unstable
 /// To use it anyways, we explicitly enable it with `#![feature(abi_x86_interrupt)]`
 extern "x86-interrupt" fn bp_handler(sf: InterruptStackFrame) {
-    println!("!~ CPU EXCEPTION: BREAKPOINT ~!\n {:#?}", sf);
+    println!("### CPU EXCEPTION: BREAKPOINT ###\n {:#?}", sf);
+}
+
+/// Double Fault handler
+/// Note: The reason is that the x86_64 architecture does not
+/// permit returning from a double fault exception.
+extern "x86-interrupt" fn df_handler(sf: InterruptStackFrame, err_code: u64) -> ! {
+    // Note: For double faults, err code is always 0.
+    panic!(
+        "### CPU EXCEPTION: DOUBLE FAULT | EC: {} ###\n {:#?}",
+        err_code, sf
+    );
 }
 
 #[test_case]
