@@ -10,7 +10,7 @@ pub mod drivers;
 pub mod kernel;
 #[allow(unused_imports)]
 pub use crate::drivers::display::vga;
-use crate::drivers::qemu_serial::serial::*;
+pub use crate::kernel::gdt;
 pub use crate::kernel::interrupts;
 use core::panic::PanicInfo;
 
@@ -67,5 +67,22 @@ fn panic(info: &PanicInfo) -> ! {
 /// that are shared between `_start` functions (main/lib/tests)
 pub fn init() -> Result<(), ()> {
     interrupts::idt_init();
+    gdt::gdt_init();
     Ok(())
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
+pub fn exit_qemu(exit_code: QemuExitCode) {
+    use x86_64::instructions::port::Port;
+
+    unsafe {
+        let mut port = Port::new(0xf4);
+        port.write(exit_code as u32);
+    }
 }

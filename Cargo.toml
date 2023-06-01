@@ -27,6 +27,11 @@ test-success-exit-code = 33         # (0x10 << 1) | 1
 # Exit qemu after timeout
 test-timeout = 30          # (in seconds)
 
-# Set the Panic strat to abort as we do not yet support stack unwinding.
+# Set the Panic strategy to abort as we do not yet support stack unwinding.
 # The following disables teh generation of unwinding symbol information, which also
 # reduces the binary size. With this the `eh_personality` language item is no longer required.
+
+[[test]]
+name = "stack_overflow"
+# We can't continue execution after a double fault, so run this test without a harness
+harness = false
