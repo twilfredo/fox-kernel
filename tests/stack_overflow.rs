@@ -5,7 +5,7 @@
 use core::panic::PanicInfo;
 use lazy_static::lazy_static;
 use project_fox::kernel::gdt;
-pub use project_fox::{exit_qemu, serial_println, QemuExitCode};
+pub use project_fox::{exit_qemu, serial_print, serial_println, QemuExitCode};
 use x86_64::structures::idt::InterruptDescriptorTable;
 use x86_64::structures::idt::InterruptStackFrame;
 
@@ -26,6 +26,7 @@ extern "x86-interrupt" fn test_df_handler(
     _stack_frame: InterruptStackFrame,
     _error_code: u64,
 ) -> ! {
+    serial_println!("[ok]");
     exit_qemu(QemuExitCode::Success);
     loop {}
 }
@@ -36,6 +37,8 @@ pub fn init_test_idt() {
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    serial_print!("start stack_overflow::stack_overflow...\t");
+
     gdt::gdt_init();
     init_test_idt();
 

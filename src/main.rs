@@ -10,8 +10,6 @@
 mod drivers;
 mod kernel;
 use crate::drivers::display::vga;
-#[allow(unused_imports)]
-use crate::drivers::qemu_serial::serial::*;
 use crate::kernel::delay::nops;
 use core::panic::PanicInfo;
 #[allow(unused_imports)]

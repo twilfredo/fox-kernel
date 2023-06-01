@@ -6,6 +6,7 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+pub mod dbg_serial;
 pub mod drivers;
 pub mod kernel;
 #[allow(unused_imports)]
